@@ -8,7 +8,7 @@ TelegramControl::TelegramControl() {
   this->password = "benjamin";
   this->hostname = "esp8266-hanger";
   this->botToken = "6323726791:AAFnKyfokJ2Cs8FVFvSQGf5ng0dizhJfdw4";
-  this->acceptedUserIds.push_back("665251898");
+  this->acceptedIds.push_back("665251898");
 
   this->lastBotHandled = 0;
   this->botRequestDelay = 1000;
@@ -70,7 +70,7 @@ void TelegramControl::handleNewMessage(int num) {
     String name = msg.from_name;
     String text = msg.text;
 
-    if (!vectorContains(this->acceptedUserIds, chatId)) {
+    if (!vectorContains(this->acceptedIds, chatId)) {
       this->bot->sendMessage(chatId, "You are an unauthorised user!");
       continue;
     }
@@ -93,6 +93,12 @@ void TelegramControl::handleNewMessage(int num) {
       msg += "Temperature: " + String(temperature) + "ºC\n";
       this->bot->sendMessage(chatId, msg);
     }
+  }
+}
+
+void TelegramControl::broadcastMessage(String msg) {
+  for (String chatId : this->acceptedIds) {
+    this->bot->sendMessage(chatId, msg);
   }
 }
 

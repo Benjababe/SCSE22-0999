@@ -16,9 +16,9 @@ MotorState MotorControl::getState() {
   return this->state;
 }
 
-void MotorControl::extendMotor() {
+bool MotorControl::extendMotor() {
   if (this->state == MotorState::extended)
-    return;
+    return false;
 
   digitalWrite(this->INA, HIGH);
   digitalWrite(this->INB, LOW);
@@ -27,11 +27,12 @@ void MotorControl::extendMotor() {
 
   this->stop();
   Serial.println("Extended!");
+  return true;
 }
 
-void MotorControl::retractMotor() {
+bool MotorControl::retractMotor() {
   if (this->state == MotorState::retracted)
-    return;
+    return false;
 
   digitalWrite(this->INA, LOW);
   digitalWrite(this->INB, HIGH);
@@ -40,6 +41,7 @@ void MotorControl::retractMotor() {
 
   this->stop();
   Serial.println("Retracted!");
+  return true;
 }
 
 void MotorControl::stop() {

@@ -20,7 +20,7 @@ private:
   String password;
   String hostname;
   String botToken;
-  std::vector<String> acceptedUserIds;
+  std::vector<String> acceptedIds;
 
   WiFiClientSecure wifiClient;
   X509List *cert;
@@ -44,6 +44,8 @@ public:
   void setupNetworking();
 
   void handleNewMessages();
+
+  void broadcastMessage(String);
 };
 
 template<typename T>

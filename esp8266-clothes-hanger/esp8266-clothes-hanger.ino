@@ -11,17 +11,23 @@ void setup(void) {
   telegramControl.setupNetworking();
   telegramControl.setMotorControl(&motorControl);
   telegramControl.setDHTControl(&dhtControl);
+
+  telegramControl.broadcastMessage("Clothes hanger system up and running");
 }
 
 void loop() {
   float hum = dhtControl.readHumidity();
 
-  if (hum >= 80)
-    motorControl.retractMotor();
-  else
-    motorControl.extendMotor();
+  if (hum >= 80) {
+    bool changed = motorControl.retractMotor();
+    if (changed)
+      telegramControl.broadcastMessage("Rain detected and clothes hanger has been retracted!");
+  } else if (hum <= 70) {
+    bool changed = motorControl.extendMotor();
+    if (changed)
+      telegramControl.broadcastMessage("Rain has subsided and clothes hanger has been extended!");
+  }
 
   telegramControl.handleNewMessages();
-
   delay(500);
 }

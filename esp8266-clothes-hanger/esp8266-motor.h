@@ -20,9 +20,9 @@ public:
 
   MotorState getState();
 
-  void extendMotor();
+  bool extendMotor();
 
-  void retractMotor();
+  bool retractMotor();
 
   void stop();
 };
