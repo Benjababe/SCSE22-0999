@@ -2,6 +2,7 @@
 #ifndef H_TELE
 #define H_TELE
 
+#include "secrets.h"
 #include "esp8266-motor.h"
 #include "esp8266-dht.h"
 

@@ -4,10 +4,10 @@ namespace ESP8266Hanger {
 
 TelegramControl::TelegramControl() {
   // Replace values accordingly
-  this->ssid = "BenjaF3";
-  this->password = "benjamin";
+  this->ssid = SECRET_SSID;
+  this->password = SECRET_PASSWORD;
+  this->botToken = SECRET_TELEGRAM_BOT_TOKEN;
   this->hostname = "esp8266-hanger";
-  this->botToken = "6323726791:AAFnKyfokJ2Cs8FVFvSQGf5ng0dizhJfdw4";
   this->acceptedIds.push_back("665251898");
 
   this->lastBotHandled = 0;
