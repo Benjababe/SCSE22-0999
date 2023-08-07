@@ -1,13 +1,13 @@
 #include "esp8266-motor.h"
 
+#define INA D0
+#define INB D1
+
 namespace ESP8266Hanger {
 
 MotorControl::MotorControl() {
-  this->INA = D0;
-  this->INB = D1;
-
-  pinMode(this->INA, OUTPUT);
-  pinMode(this->INB, OUTPUT);
+  pinMode(INA, OUTPUT);
+  pinMode(INB, OUTPUT);
 
   this->extendMotor();
 }
@@ -20,8 +20,8 @@ bool MotorControl::extendMotor() {
   if (this->state == MotorState::extended)
     return false;
 
-  digitalWrite(this->INA, HIGH);
-  digitalWrite(this->INB, LOW);
+  digitalWrite(INA, HIGH);
+  digitalWrite(INB, LOW);
   delay(1200);
   this->state = MotorState::extended;
 
@@ -34,8 +34,8 @@ bool MotorControl::retractMotor() {
   if (this->state == MotorState::retracted)
     return false;
 
-  digitalWrite(this->INA, LOW);
-  digitalWrite(this->INB, HIGH);
+  digitalWrite(INA, LOW);
+  digitalWrite(INB, HIGH);
   delay(1200);
   this->state = MotorState::retracted;
 
@@ -45,8 +45,8 @@ bool MotorControl::retractMotor() {
 }
 
 void MotorControl::stop() {
-  digitalWrite(this->INA, LOW);
-  digitalWrite(this->INB, LOW);
+  digitalWrite(INA, LOW);
+  digitalWrite(INB, LOW);
 }
 
 }

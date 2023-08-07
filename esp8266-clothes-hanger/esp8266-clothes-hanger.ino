@@ -12,6 +12,7 @@ void setup(void) {
   telegramControl.setMotorControl(&motorControl);
   telegramControl.setDHTControl(&dhtControl);
 
+  // Inform users on system initialisation
   telegramControl.broadcastMessage("Clothes hanger system up and running");
 }
 

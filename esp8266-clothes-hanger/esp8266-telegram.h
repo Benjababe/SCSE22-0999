@@ -32,6 +32,7 @@ private:
   unsigned long lastBotHandled;
   int botRequestDelay;
 
+  /** Handles individual new message from user */
   void handleNewMessage(int);
 
 public:
@@ -41,13 +42,17 @@ public:
 
   void setDHTControl(DHTControl *);
 
+  /** Initialises Wifi connection and mDNS broadcast */
   void setupNetworking();
 
+  /** Listens and handles any new telegram messages */
   void handleNewMessages();
 
+  /** Broadcast a given message to all accepted Ids */
   void broadcastMessage(String);
 };
 
+/** Helper function to check if element exists in vector `vec` */
 template<typename T>
 bool vectorContains(std::vector<T> vec, T element) {
   return (std::find(vec.begin(), vec.end(), element) != vec.end());
