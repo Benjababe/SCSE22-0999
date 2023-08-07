@@ -3,6 +3,8 @@
 
 #include <ESPmDNS.h>
 #include <WiFi.h>
+
+#include "secrets.h"
 #include "esp32-lock-control.h"
 
 #define PIN_LEN 4

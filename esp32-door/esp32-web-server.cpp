@@ -6,8 +6,8 @@ const long timeoutTimeMs = 2000;
 
 WebServer::WebServer() {
   this->server = new WiFiServer(80);
-  this->ssid = "BenjaF3";
-  this->password = "benjamin";
+  this->ssid = SECRET_SSID;
+  this->password = SECRET_PASSWORD;
   this->hostname = "esp32-lock";
 
   WiFi.setHostname(hostname.c_str());
