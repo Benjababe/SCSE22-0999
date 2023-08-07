@@ -1,6 +1,7 @@
 #ifndef H_WEB_SERVER
 #define H_WEB_SERVER
 
+#include <ESPmDNS.h>
 #include <WiFi.h>
 #include "esp32-lock-control.h"
 
@@ -17,6 +18,7 @@ private:
   IPAddress localIP;
   String ssid;
   String password;
+  String hostname;
 
 public:
   char pin[PIN_LEN + 1];

@@ -8,13 +8,18 @@ WebServer::WebServer() {
   this->server = new WiFiServer(80);
   this->ssid = "BenjaF3";
   this->password = "benjamin";
+  this->hostname = "esp32-lock";
 
-  WiFi.setHostname("ESP32-Lock");
+  WiFi.setHostname(hostname.c_str());
   WiFi.begin(ssid.c_str(), password.c_str());
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
+  }
+
+  if (!MDNS.begin(hostname.c_str())) {
+    Serial.println("Error starting mDNS");
   }
 
   for (size_t i = 0; i < PIN_LEN; ++i)
@@ -33,6 +38,8 @@ WebServer::WebServer() {
   Serial.println(WiFi.localIP());
   localIP = WiFi.localIP();
   server->begin();
+
+  MDNS.addService("http", "tcp", 80);
 }
 
 void WebServer::listenClients(LockControl &lockCtrl) {
