@@ -6,6 +6,7 @@
 #include <Keypad.h>
 #include "esp32-servo.h"
 #include "esp32-web-server.h"
+#include "esp32-web-client.h"
 #include "esp32-nfc.h"
 
 #define PIN_LEN 4
@@ -22,6 +23,7 @@ class WebServer;
 class LockControl {
 private:
   WebServer *webServer;
+  WebClient *webClient;
   ServoControl *servoCtrl;
   NFCReader *nfcReader;
   Keypad *keypad;
@@ -36,6 +38,8 @@ public:
   LockControl();
 
   void setWebServer(WebServer *);
+
+  void setWebClient(WebClient *);
 
   void setServoControl(ServoControl *);
 

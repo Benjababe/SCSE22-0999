@@ -27,10 +27,10 @@ WebServer::WebServer() {
   this->pin[PIN_LEN] = '\0';
 
   // init NFC tag values
-  this->nfcTag[0] = 0xDA;
-  this->nfcTag[1] = 0x6B;
-  this->nfcTag[2] = 0x6A;
-  this->nfcTag[3] = 0x80;
+  this->nfcTag[0] = 0x4C;
+  this->nfcTag[1] = 0xDF;
+  this->nfcTag[2] = 0xB7;
+  this->nfcTag[3] = 0x89;
   this->nfcTag[4] = '\0';
 
   Serial.println("\nConnected to Wifi!");

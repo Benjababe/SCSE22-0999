@@ -1,5 +1,6 @@
-#include "esp32-servo.h"
 #include "esp32-web-server.h"
+#include "esp32-web-client.h"
+#include "esp32-servo.h"
 #include "esp32-lock-control.h"
 #include "esp32-nfc.h"
 
@@ -15,6 +16,7 @@ ulong pressedTime = 0;
 ulong releasedTime = 0;
 
 ESP32Door::WebServer *webServer;
+ESP32Door::WebClient webClient;
 ESP32Door::ServoControl servoCtrl;
 ESP32Door::LockControl lockCtrl;
 ESP32Door::NFCReader nfcReader;
@@ -28,16 +30,20 @@ void setup(void) {
 
   webServer = new ESP32Door::WebServer();
   lockCtrl.setWebServer(webServer);
+  lockCtrl.setWebClient(&webClient);
   lockCtrl.setServoControl(&servoCtrl);
   lockCtrl.setNFCReader(&nfcReader);
   lockCtrl.setupKeypad();
 
   servoCtrl.lock();
   lockCtrl.clearPinEntry();
+
+  webClient.connectAWS();
 }
 
 void loop() {
   webServer->listenClients(lockCtrl);
+  webClient.refreshConnection();
 
   lockCtrl.readNFC();
 
@@ -85,7 +91,7 @@ void loop() {
 
       // lock door if currently unlocked
       else if (lockCtrl.state == ESP32Door::State::unlocked || !servoCtrl.isLocked()) {
-          lockCtrl.lock();
+        lockCtrl.lock();
       }
     }
   }

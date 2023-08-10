@@ -1,8 +1,11 @@
 #ifndef H_WEB_SERVER
 #define H_WEB_SERVER
 
+#include <ArduinoJson.h>
 #include <ESPmDNS.h>
+#include <MQTTClient.h>
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 
 #include "secrets.h"
 #include "esp32-lock-control.h"

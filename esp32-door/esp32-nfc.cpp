@@ -20,9 +20,9 @@ NFCReading NFCReader::read() {
   if (!this->rfid->PICC_ReadCardSerial())
     return nfcReading;
 
-  Serial.print(F("PICC type: "));
   MFRC522::PICC_Type piccType = this->rfid->PICC_GetType(this->rfid->uid.sak);
-  Serial.println(this->rfid->PICC_GetTypeName(piccType));
+  //Serial.print(F("PICC type: "));
+  //Serial.println(this->rfid->PICC_GetTypeName(piccType));
 
   // Check is the PICC of Classic MIFARE type
   if (piccType != MFRC522::PICC_TYPE_MIFARE_MINI && piccType != MFRC522::PICC_TYPE_MIFARE_1K && piccType != MFRC522::PICC_TYPE_MIFARE_4K) {
@@ -30,10 +30,9 @@ NFCReading NFCReader::read() {
     return nfcReading;
   }
 
-//   Serial.println(F("The UID tag is:"));
-//   Serial.print(F("In hex: "));
-//   printHex(this->rfid->uid.uidByte, this->rfid->uid.size);
-//   Serial.println();
+  Serial.print(F("The UID tag is:"));
+  printHex(this->rfid->uid.uidByte, this->rfid->uid.size);
+  Serial.println();
 
   this->rfid->PICC_HaltA();
   this->rfid->PCD_StopCrypto1();

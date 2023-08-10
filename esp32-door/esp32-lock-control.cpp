@@ -22,6 +22,10 @@ void LockControl::setWebServer(WebServer *webServer) {
   this->webServer = webServer;
 }
 
+void LockControl::setWebClient(WebClient *webClient) {
+  this->webClient = webClient;
+}
+
 void LockControl::setServoControl(ServoControl *servoCtrl) {
   this->servoCtrl = servoCtrl;
 }
@@ -55,6 +59,7 @@ void LockControl::readNFC() {
 
     else {
       this->printLCDCenter("Unregistered", "NFC Device");
+      this->webClient->publishInvalidEntry();
       delay(2000);
       this->printLCDPin();
 
@@ -81,6 +86,7 @@ void LockControl::handlePinEntry(char key) {
       // if invalid, lock if possible and clear input
       else {
         this->printLCDCenter("Wrong", "PIN!");
+        this->webClient->publishInvalidEntry();
         delay(2000);
         this->lock();
       }
