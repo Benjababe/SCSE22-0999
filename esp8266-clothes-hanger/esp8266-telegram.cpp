@@ -15,6 +15,8 @@ TelegramControl::TelegramControl() {
   this->wifiClient.setInsecure();
   this->cert = new X509List(TELEGRAM_CERTIFICATE_ROOT);
   this->bot = new UniversalTelegramBot(botToken, this->wifiClient);
+
+  MDNS.addService("http", "tcp", 80);
 }
 
 void TelegramControl::setupNetworking() {

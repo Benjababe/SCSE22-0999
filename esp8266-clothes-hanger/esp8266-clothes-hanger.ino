@@ -2,6 +2,9 @@
 #include "esp8266-dht.h"
 #include "esp8266-telegram.h"
 
+#define RAIN_HUMIDITY_LOWER_BOUND 90
+#define SUN_HUMIDITY_UPPER_BOUND 80
+
 ESP8266Hanger::MotorControl motorControl;
 ESP8266Hanger::DHTControl dhtControl;
 ESP8266Hanger::TelegramControl telegramControl;
@@ -19,11 +22,11 @@ void setup(void) {
 void loop() {
   float hum = dhtControl.readHumidity();
 
-  if (hum >= 80) {
+  if (hum >= RAIN_HUMIDITY_LOWER_BOUND) {
     bool changed = motorControl.retractMotor();
     if (changed)
       telegramControl.broadcastMessage("Rain detected and clothes hanger has been retracted!");
-  } else if (hum <= 70) {
+  } else if (hum <= SUN_HUMIDITY_UPPER_BOUND) {
     bool changed = motorControl.extendMotor();
     if (changed)
       telegramControl.broadcastMessage("Rain has subsided and clothes hanger has been extended!");
