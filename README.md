@@ -2,10 +2,9 @@
 
 ## External libraries used
 
-All as of 12 July 2023 are available in Arduino IDE's library manager
-
 - [ArduinoJson](https://arduinojson.org/)
 - [DHT-sensor-library](https://github.com/adafruit/DHT-sensor-library)
+- [ImgurUploader](https://github.com/tobozo/ImgurUploader/)
 - [Keypad](https://playground.arduino.cc/Code/Keypad/)
 - [LiquidCrystal_I2C](https://github.com/johnrickman/LiquidCrystal_I2C)
 - [MFRC522](https://github.com/miguelbalboa/rfid)
