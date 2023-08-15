@@ -22,7 +22,7 @@ void WebClient::connectAWS() {
   this->mqttClient->begin(SECRET_AWS_IOT_ENDPOINT, 8883, this->client);
 
   Serial.print("Connecting to AWS IOT Core");
-  while (!this->mqttClient->connect(SECRET_THING_NAME)) {
+  while (!this->mqttClient->connect(SECRET_AWS_IOT_CLIENT_ID)) {
     Serial.print(".");
     delay(200);
   }

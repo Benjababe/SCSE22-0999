@@ -16,10 +16,10 @@ Apart from external libraries, a `secrets.h` file is required in the project dir
 // Wifi password
 #define SECRET_PASSWORD ""
 
-// Thing name on AWS IoT Core
-#define SECRET_THING_NAME ""
+// Client ID to connect as. Can be any string
+#define SECRET_AWS_IOT_CLIENT_ID ""
 
-// HTTPS endpoint for AWS IoT Core Thing
+// Endpoint for AWS IoT Core Thing
 #define SECRET_AWS_IOT_ENDPOINT ""
 
 // Amazon Root CA 1
