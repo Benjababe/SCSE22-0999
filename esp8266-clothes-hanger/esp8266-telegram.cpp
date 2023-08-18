@@ -44,8 +44,8 @@ void TelegramControl::setMotorControl(MotorControl *motorControl) {
   this->motorControl = motorControl;
 }
 
-void TelegramControl::setDHTControl(DHTControl *dhtControl) {
-  this->dhtControl = dhtControl;
+void TelegramControl::setWeatherControl(WeatherControl *weatherControl) {
+  this->weatherControl = weatherControl;
 }
 
 void TelegramControl::handleNewMessages() {
@@ -84,15 +84,17 @@ void TelegramControl::handleNewMessage(int num) {
       this->bot->sendMessage(chatId, msg);
     }
 
-    else if (text == "/state") {
+    else if (text == "/weather") {
       MotorState state = this->motorControl->getState();
-      float humidity = this->dhtControl->readHumidity();
-      float temperature = this->dhtControl->readTemperature();
+      float humidity = this->weatherControl->readHumidity();
+      float temperature = this->weatherControl->readTemperature();
+      float rainLevelPctg = this->weatherControl->readRainLevelPctg();
 
       String msg = "Current state of clothes hanger: \n";
       msg += "Hanger: " + String((state == MotorState::extended) ? "Extended" : "Retracted") + "\n";
       msg += "Humidity: " + String(humidity) + "%\n";
       msg += "Temperature: " + String(temperature) + "ºC\n";
+      msg += "Rain Level: " + String(rainLevelPctg) + "%\n";
       this->bot->sendMessage(chatId, msg);
     }
   }

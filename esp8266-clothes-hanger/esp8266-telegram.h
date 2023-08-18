@@ -4,7 +4,7 @@
 
 #include "secrets.h"
 #include "esp8266-motor.h"
-#include "esp8266-dht.h"
+#include "esp8266-weather.h"
 
 #include <ArduinoJson.h>
 #include <BearSSLHelpers.h>
@@ -27,7 +27,7 @@ private:
   X509List *cert;
 
   MotorControl *motorControl;
-  DHTControl *dhtControl;
+  WeatherControl *weatherControl;
 
   UniversalTelegramBot *bot;
   unsigned long lastBotHandled;
@@ -41,7 +41,7 @@ public:
 
   void setMotorControl(MotorControl *);
 
-  void setDHTControl(DHTControl *);
+  void setWeatherControl(WeatherControl *);
 
   /** Initialises Wifi connection and mDNS broadcast */
   void setupNetworking();
