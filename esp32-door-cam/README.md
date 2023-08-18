@@ -28,9 +28,6 @@ Apart from external libraries, a `secrets.h` file is required in the project dir
 // Vector of telegram ids for the bot to broadcast to
 #define SECRET_TELEGRAM_IDS { "", "" }
 
-// Imgur API client id for image uploads
-#define SECRET_IMGUR_CLIENT_ID ""
-
 // Amazon Root CA 1
 static const char SECRET_AWS_CERT_CA[] PROGMEM = R"EOF(
 -----BEGIN CERTIFICATE-----
