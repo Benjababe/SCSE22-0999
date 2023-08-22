@@ -7,7 +7,7 @@ TelegramControl::TelegramControl() {
   this->ssid = SECRET_SSID;
   this->password = SECRET_PASSWORD;
   this->botToken = SECRET_TELEGRAM_BOT_TOKEN;
-  this->hostname = "esp8266-hanger";
+  this->hostname = "esp8266-weather-monitor";
   this->acceptedIds.push_back("665251898");
 
   this->lastBotHandled = 0;
@@ -29,7 +29,7 @@ void TelegramControl::setupNetworking() {
   Serial.println(WiFi.localIP());
 
   // Broadcast mDNS
-  if (!MDNS.begin(hostname)) {
+  if (!MDNS.begin(this->hostname)) {
     Serial.println("Error starting mDNS");
   }
 
@@ -101,8 +101,9 @@ void TelegramControl::handleNewMessage(int num) {
 }
 
 void TelegramControl::broadcastMessage(String msg) {
+  String prepend = "[Weather Monitoring System]: ";
   for (String chatId : this->acceptedIds) {
-    this->bot->sendMessage(chatId, msg);
+    this->bot->sendMessage(chatId, prepend + msg);
   }
 }
 

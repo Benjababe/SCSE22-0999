@@ -16,7 +16,7 @@ void setup(void) {
   telegramControl.setWeatherControl(&weatherControl);
 
   // Inform users on system initialisation
-  telegramControl.broadcastMessage("Clothes hanger system up and running");
+  telegramControl.broadcastMessage("Up and running");
 }
 
 void loop() {
