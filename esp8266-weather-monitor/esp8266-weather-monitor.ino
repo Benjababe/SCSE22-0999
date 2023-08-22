@@ -20,7 +20,7 @@ void setup(void) {
 }
 
 void loop() {
-  int rainLevel =  weatherControl.readRainLevel();
+  int rainLevel = weatherControl.readRainLevel();
 
   if (rainLevel <= RAIN_LEVEL_UPPER_BOUND) {
     bool changed = motorControl.retractMotor();
