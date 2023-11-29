@@ -3,6 +3,7 @@
 
 #include <ArduinoJson.h>
 #include <MQTTClient.h>
+#include <UniversalTelegramBot.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 
@@ -14,11 +15,13 @@ namespace ESP32Door {
 
 class WebClient {
 private:
-  WiFiClientSecure client;
   MQTTClient *mqttClient;
   unsigned long lastRefresh;
 
 public:
+  WiFiClientSecure client;
+  WiFiClientSecure teleClient;
+
   WebClient();
 
   /** Creates a connection to AWS IoT Core */

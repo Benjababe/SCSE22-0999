@@ -16,6 +16,10 @@ LockControl::LockControl() {
   this->state = State::locked;
   this->pinEntry = new char[PIN_LEN];
   this->pinCursor = 0;
+
+  this->lastBotHandled = 0;
+  this->botRequestDelay = 3000;
+  this->acceptedIds = SECRET_TELEGRAM_IDS;
 }
 
 void LockControl::setWebServer(WebServer *webServer) {
@@ -24,6 +28,8 @@ void LockControl::setWebServer(WebServer *webServer) {
 
 void LockControl::setWebClient(WebClient *webClient) {
   this->webClient = webClient;
+  this->bot = new UniversalTelegramBot(SECRET_TELEGRAM_BOT_TOKEN, this->webClient->teleClient);
+  this->broadcastMessage("up and running");
 }
 
 void LockControl::setServoControl(ServoControl *servoCtrl) {
@@ -158,6 +164,75 @@ void LockControl::printLCDCenter(const char *l1, const char *l2) {
 
 void LockControl::printLCDPin() {
   this->printLCDCenter("PIN:", this->pinEntry);
+}
+
+void LockControl::handleNewMessages() {
+  if (millis() > (this->lastBotHandled + this->botRequestDelay)) {
+    int numNewMsgs = this->bot->getUpdates(this->bot->last_message_received + 1);
+
+    while (numNewMsgs) {
+      Serial.println("Got response");
+      this->handleNewMessage(numNewMsgs);
+      numNewMsgs = this->bot->getUpdates(this->bot->last_message_received + 1);
+    }
+
+    this->lastBotHandled = millis();
+  }
+}
+
+void LockControl::handleNewMessage(int num) {
+  Serial.println("Handling new message");
+  Serial.println(String(num));
+
+  for (int i = 0; i < num; ++i) {
+    telegramMessage msg = this->bot->messages[i];
+    String chatId = String(msg.chat_id);
+    String name = msg.from_name;
+    String text = msg.text;
+
+    if (!vectorContains(this->acceptedIds, chatId)) {
+      this->bot->sendMessage(chatId, "You are an unauthorised user!");
+      continue;
+    }
+
+    if (text.startsWith("/setpin")) {
+      if (text.length() != (8 + PIN_LEN)) {
+        this->bot->sendMessage(chatId, "Please ensure the PIN is " + String(PIN_LEN) + " digits long.");
+      } else {
+        String pin = text.substring(8, 8 + PIN_LEN);
+        bool pinValid = true;
+
+        for (char digit : pin) {
+          if ((digit < '0' || digit > '9') && pinValid) {
+            this->bot->sendMessage(chatId, "Please ensure the PIN is numeric.");
+            pinValid = false;
+          }
+        }
+
+        if (pinValid) {
+          for (size_t i = 0; i < PIN_LEN; ++i)
+            this->webServer->pin[i] = pin[i];
+          this->bot->sendMessage(chatId, "PIN updated to " + pin);
+        }
+      }
+    }
+
+    if (text == "/lock") {
+      if (this->servoCtrl->isLocked()) {
+        this->bot->sendMessage(chatId, "Door is already locked");
+      } else {
+        this->lock();
+        this->bot->sendMessage(chatId, "Door has been locked");
+      }
+    }
+  }
+}
+
+void LockControl::broadcastMessage(String msg) {
+  String prepend = "[Smart Lock System]: ";
+  for (String chatId : this->acceptedIds) {
+    this->bot->sendMessage(chatId, prepend + msg);
+  }
 }
 }
 

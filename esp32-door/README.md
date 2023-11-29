@@ -16,6 +16,12 @@ Apart from external libraries, a `secrets.h` file is required in the project dir
 // Wifi password
 #define SECRET_PASSWORD ""
 
+// Bot token for the home bot
+#define SECRET_TELEGRAM_BOT_TOKEN "xxxxx:xxxxx"
+
+// Vector of telegram ids which are trusted
+#define SECRET_TELEGRAM_IDS { "", "" }
+
 // Client ID to connect as. Can be any string
 #define SECRET_AWS_IOT_CLIENT_ID ""
 

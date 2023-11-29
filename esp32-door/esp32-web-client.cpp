@@ -5,6 +5,8 @@ namespace ESP32Door {
 WebClient::WebClient() {
   this->lastRefresh = 0;
 
+  this->teleClient.setInsecure();
+
   this->client.setCACert(SECRET_AWS_CERT_CA);
   this->client.setCertificate(SECRET_AWS_CERT_CRT);
   this->client.setPrivateKey(SECRET_AWS_CERT_PRIVATE);

@@ -45,6 +45,8 @@ void loop() {
   webServer->listenClients(lockCtrl);
   webClient.refreshConnection();
 
+  lockCtrl.handleNewMessages();
+
   lockCtrl.readNFC();
 
   // only handle key if it's locked, waiting for PIN input
