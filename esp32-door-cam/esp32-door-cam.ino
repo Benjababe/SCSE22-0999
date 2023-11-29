@@ -48,5 +48,6 @@ void setup() {
 
 void loop() {
   webClient.refreshConnection();
+  webClient.handleNewMessages();
   delay(1000);
 }

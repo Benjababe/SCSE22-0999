@@ -32,6 +32,9 @@ public:
 
   /** Publishes a message when invalid PIN/NFC device was provided */
   void publishInvalidEntry();
+
+  /** Publishes a message when /snapshot command is provided */
+  void publishSnapshot();
 };
 
 }

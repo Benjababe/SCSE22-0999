@@ -4,12 +4,22 @@
 
 WiFiClientSecure client;
 WiFiClientSecure clientTele;
-UniversalTelegramBot bot(SECRET_TELEGRAM_BOT_TOKEN, clientTele);
 
 std::vector<String> acceptedIds = SECRET_TELEGRAM_IDS;
 
+enum Code {
+  TELE_CONN_FAIL = 1,
+  CAMERA_READ_ERR = 2
+};
+
 WebClient::WebClient() {
   this->lastRefresh = 0;
+
+  this->clientTeleListener.setInsecure();
+  this->bot = new UniversalTelegramBot(SECRET_TELEGRAM_BOT_TOKEN, this->clientTeleListener);
+  this->lastBotHandled = 0;
+  this->botRequestDelay = 1000;
+  this->acceptedIds = SECRET_TELEGRAM_IDS;
 
   clientTele.setCACert(TELEGRAM_CERTIFICATE_ROOT);
   client.setCACert(SECRET_AWS_CERT_CA);
@@ -42,7 +52,7 @@ void WebClient::connectAWS() {
     Serial.println("\nAWS IOT Core connected!");
 
     for (String chatId : acceptedIds) {
-      bot.sendMessage(chatId, "[Smart Lock System] Camera up and running");
+      this->broadcastMessage("up and running");
     }
   }
 }
@@ -64,12 +74,16 @@ void WebClient::refreshConnection() {
 void onInvalidEntry(String& topic, String& payload) {
   Serial.println("Incoming: " + topic + " - " + payload);
 
+  DynamicJsonDocument jsonDoc(1024);
+  DeserializationError err = deserializeJson(jsonDoc, payload);
+  if (err) return;
+
   for (String chatId : acceptedIds) {
-    sendPhotoTelegram(chatId);
+    sendPhotoTelegram(chatId, jsonDoc["message"].as<String>());
   }
 }
 
-void sendPhotoTelegram(String chatId) {
+int sendPhotoTelegram(String chatId, String msg) {
   const String myDomain = "api.telegram.org";
   String getAll = "";
   String getBody = "";
@@ -80,14 +94,14 @@ void sendPhotoTelegram(String chatId) {
     Serial.println("Camera capture failed");
     delay(1000);
     ESP.restart();
-    return;
+    return Code::CAMERA_READ_ERR;
   }
   Serial.println("Connecting to " + myDomain);
   if (clientTele.connect(myDomain.c_str(), 443)) {
     Serial.println("Connection successful");
 
     String head = "--cam\r\nContent-Disposition: form-data; name=\"chat_id\"; \r\n\r\n" + chatId + "\r\n";
-    head += "--cam\r\nContent-Disposition: form-data; name=\"caption\"\r\n\r\n[Smart Lock System] Invalid entry attempted on ESP32 lock!\r\n";
+    if (msg.length() > 0) head += "--cam\r\nContent-Disposition: form-data; name=\"caption\"\r\n\r\n[Smart Lock System] " + msg + "\r\n";
     head += "--cam\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
     String tail = "\r\n--cam--\r\n";
 
@@ -142,6 +156,45 @@ void sendPhotoTelegram(String chatId) {
   } else {
     getBody = "Connected to api.telegram.org failed.";
     Serial.println("Connected to api.telegram.org failed.");
+    return Code::TELE_CONN_FAIL;
   }
-  return;
+  return 0;
+}
+
+void WebClient::handleNewMessages() {
+  if (millis() > (this->lastBotHandled + this->botRequestDelay)) {
+    int numNewMsgs = this->bot->getUpdates(this->bot->last_message_received + 1);
+
+    while (numNewMsgs) {
+      Serial.println("Got response");
+      this->handleNewMessage(numNewMsgs);
+      numNewMsgs = this->bot->getUpdates(this->bot->last_message_received + 1);
+    }
+
+    this->lastBotHandled = millis();
+  }
+}
+
+void WebClient::handleNewMessage(int num) {
+  Serial.println("Handling new message");
+  Serial.println(String(num));
+
+  for (int i = 0; i < num; ++i) {
+    telegramMessage msg = this->bot->messages[i];
+    String chatId = String(msg.chat_id);
+    String name = msg.from_name;
+    String text = msg.text;
+
+    if (!vectorContains(this->acceptedIds, chatId)) {
+      this->bot->sendMessage(chatId, "You are an unauthorised user!");
+      continue;
+    }
+  }
+}
+
+void WebClient::broadcastMessage(String msg) {
+  String prepend = "[Smart Lock Camera]: ";
+  for (String chatId : this->acceptedIds) {
+    this->bot->sendMessage(chatId, prepend + msg);
+  }
 }

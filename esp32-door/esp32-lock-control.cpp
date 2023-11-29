@@ -213,17 +213,26 @@ void LockControl::handleNewMessage(int num) {
           for (size_t i = 0; i < PIN_LEN; ++i)
             this->webServer->pin[i] = pin[i];
           this->bot->sendMessage(chatId, "PIN updated to " + pin);
+
+          // print on lcd on PIN change
+          this->printLCDCenter("PIN changed to:", this->webServer->pin);
+          delay(5000);
+          this->lock();
         }
       }
     }
 
-    if (text == "/lock") {
+    else if (text == "/lock") {
       if (this->servoCtrl->isLocked()) {
         this->bot->sendMessage(chatId, "Door is already locked");
       } else {
         this->lock();
         this->bot->sendMessage(chatId, "Door has been locked");
       }
+    }
+
+    else if (text == "/snapshot") {
+      this->webClient->publishSnapshot();
     }
   }
 }

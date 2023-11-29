@@ -46,6 +46,16 @@ void WebClient::refreshConnection() {
 void WebClient::publishInvalidEntry() {
   StaticJsonDocument<200> doc;
   doc["time"] = millis();
+  doc["message"] = "Invalid entry attempted on Smart Lock System!";
+  char jsonBuffer[512];
+  serializeJson(doc, jsonBuffer);
+  this->mqttClient->publish(AWS_IOT_PUBLISH_TOPIC, jsonBuffer);
+}
+
+void WebClient::publishSnapshot() {
+  StaticJsonDocument<200> doc;
+  doc["time"] = millis();
+  doc["message"] = "";
   char jsonBuffer[512];
   serializeJson(doc, jsonBuffer);
   this->mqttClient->publish(AWS_IOT_PUBLISH_TOPIC, jsonBuffer);
