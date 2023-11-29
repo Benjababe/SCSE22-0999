@@ -9,16 +9,22 @@ MotorControl::MotorControl() {
   pinMode(INA, OUTPUT);
   pinMode(INB, OUTPUT);
 
-  this->extendMotor();
+  this->extendMotor(false);
 }
 
 MotorState MotorControl::getState() {
   return this->state;
 }
 
-bool MotorControl::extendMotor() {
+bool MotorControl::getManual() {
+  return this->manual;
+}
+
+bool MotorControl::extendMotor(bool manual) {
   if (this->state == MotorState::extended)
     return false;
+
+  this->manual = manual;
 
   digitalWrite(INA, HIGH);
   digitalWrite(INB, LOW);
@@ -30,9 +36,11 @@ bool MotorControl::extendMotor() {
   return true;
 }
 
-bool MotorControl::retractMotor() {
+bool MotorControl::retractMotor(bool manual) {
   if (this->state == MotorState::retracted)
     return false;
+
+  this->manual = manual;
 
   digitalWrite(INA, LOW);
   digitalWrite(INB, HIGH);

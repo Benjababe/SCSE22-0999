@@ -8,6 +8,9 @@
 #define RAIN_D0 D3
 #define RAIN_A0 A0
 
+#define RAIN_LEVEL_UPPER_BOUND 512
+#define RAIN_LEVEL_LOWER_BOUND 768
+
 namespace ESP8266Hanger {
 class WeatherControl {
 private:

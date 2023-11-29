@@ -77,25 +77,34 @@ void TelegramControl::handleNewMessage(int num) {
       continue;
     }
 
-    if (text == "/start") {
-      String msg = "Welcome, " + name + ".\n";
-      msg += "Use the following command to get current state of the clothes hanger.\n\n";
-      msg += "/state \n";
-      this->bot->sendMessage(chatId, msg);
-    }
-
-    else if (text == "/weather") {
+    if (text == "/weather") {
       MotorState state = this->motorControl->getState();
       float humidity = this->weatherControl->readHumidity();
       float temperature = this->weatherControl->readTemperature();
       float rainLevelPctg = this->weatherControl->readRainLevelPctg();
 
-      String msg = "Current state of clothes hanger: \n";
+      String msg = "[Weather Monitoring System]: Current state of clothes hanger: \n";
       msg += "Hanger: " + String((state == MotorState::extended) ? "Extended" : "Retracted") + "\n";
       msg += "Humidity: " + String(humidity) + "%\n";
       msg += "Temperature: " + String(temperature) + "ºC\n";
       msg += "Rain Level: " + String(rainLevelPctg) + "%\n";
       this->bot->sendMessage(chatId, msg);
+    }
+
+    else if (text == "/extendhanger") {
+      int rainLevel = this->weatherControl->readRainLevel();
+      Serial.println(rainLevel);
+      if (rainLevel <= RAIN_LEVEL_UPPER_BOUND) {
+        this->bot->sendMessage(chatId, "[Weather Monitoring System]: Rain is detected, hanger will not be extended");
+      } else {
+        bool changed = this->motorControl->extendMotor(true);
+        this->bot->sendMessage(chatId, (changed) ? "[Weather Monitoring System]: Hanger extended" : "[Weather Monitoring System]: Hanger is already extended");
+      }
+    }
+
+    else if (text == "/retracthanger") {
+      bool changed = this->motorControl->retractMotor(true);
+      this->bot->sendMessage(chatId, (changed) ? "[Weather Monitoring System]: Hanger retracted" : "[Weather Monitoring System]: Hanger is already retracted");
     }
   }
 }
