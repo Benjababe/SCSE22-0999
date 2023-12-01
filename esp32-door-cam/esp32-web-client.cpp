@@ -1,3 +1,4 @@
+#include "Arduino.h"
 #include "WiFiClientSecure.h"
 #include "esp_camera.h"
 #include "esp32-web-client.h"
@@ -13,6 +14,8 @@ enum Code {
 };
 
 WebClient::WebClient() {
+  pinMode(FLASH_GPIO_PIN, OUTPUT);
+
   this->lastRefresh = 0;
 
   this->clientTeleListener.setInsecure();
@@ -29,7 +32,7 @@ WebClient::WebClient() {
   this->mqttClient = new MQTTClient(256);
 }
 
-void WebClient::connectAWS() {
+void WebClient::connectAWS(bool initial) {
   // Wait for wifi to connect. This should only be run after web server setup
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -51,8 +54,10 @@ void WebClient::connectAWS() {
     this->mqttClient->subscribe(AWS_IOT_SUBSCRIBE_TOPIC);
     Serial.println("\nAWS IOT Core connected!");
 
-    for (String chatId : acceptedIds) {
-      this->broadcastMessage("up and running");
+    if (initial) {
+      for (String chatId : acceptedIds) {
+        this->broadcastMessage("up and running");
+      }
     }
   }
 }
@@ -60,7 +65,7 @@ void WebClient::connectAWS() {
 void WebClient::refreshConnection() {
   // Sometimes image uploads take too long which causes the MQTT client to timeout
   if (!this->mqttClient->connected()) {
-    this->connectAWS();
+    this->connectAWS(false);
     this->lastRefresh = 0;
   } else {
     unsigned long timeSinceLast = millis() - this->lastRefresh;
@@ -78,8 +83,12 @@ void onInvalidEntry(String& topic, String& payload) {
   DeserializationError err = deserializeJson(jsonDoc, payload);
   if (err) return;
 
+  bool flash = jsonDoc["flash"].as<bool>();
+
   for (String chatId : acceptedIds) {
+    if (flash)  digitalWrite(FLASH_GPIO_PIN, HIGH);
     sendPhotoTelegram(chatId, jsonDoc["message"].as<String>());
+    if (flash)  digitalWrite(FLASH_GPIO_PIN, LOW);
   }
 }
 
@@ -162,17 +171,17 @@ int sendPhotoTelegram(String chatId, String msg) {
 }
 
 void WebClient::handleNewMessages() {
-  if (millis() > (this->lastBotHandled + this->botRequestDelay)) {
-    int numNewMsgs = this->bot->getUpdates(this->bot->last_message_received + 1);
+  // if (millis() > (this->lastBotHandled + this->botRequestDelay)) {
+  //   int numNewMsgs = this->bot->getUpdates(this->bot->last_message_received + 1);
 
-    while (numNewMsgs) {
-      Serial.println("Got response");
-      this->handleNewMessage(numNewMsgs);
-      numNewMsgs = this->bot->getUpdates(this->bot->last_message_received + 1);
-    }
+  //   while (numNewMsgs) {
+  //     Serial.println("Got response");
+  //     this->handleNewMessage(numNewMsgs);
+  //     numNewMsgs = this->bot->getUpdates(this->bot->last_message_received + 1);
+  //   }
 
-    this->lastBotHandled = millis();
-  }
+  //   this->lastBotHandled = millis();
+  // }
 }
 
 void WebClient::handleNewMessage(int num) {

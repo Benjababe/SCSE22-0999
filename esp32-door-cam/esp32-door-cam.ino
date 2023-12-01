@@ -43,7 +43,7 @@ void setup() {
 
   MDNS.addService("http", "tcp", 80);
 
-  webClient.connectAWS();
+  webClient.connectAWS(true);
 }
 
 void loop() {

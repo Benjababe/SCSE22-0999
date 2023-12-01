@@ -34,7 +34,7 @@ public:
   void publishInvalidEntry();
 
   /** Publishes a message when /snapshot command is provided */
-  void publishSnapshot();
+  void publishSnapshot(bool);
 };
 
 }

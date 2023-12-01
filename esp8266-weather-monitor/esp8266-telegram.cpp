@@ -51,6 +51,7 @@ void TelegramControl::setWeatherControl(WeatherControl *weatherControl) {
 void TelegramControl::handleNewMessages() {
   if (millis() > (this->lastBotHandled + this->botRequestDelay)) {
     int numNewMsgs = this->bot->getUpdates(this->bot->last_message_received + 1);
+    Serial.printf("%d new messages from telegram...\n", numNewMsgs);
 
     while (numNewMsgs) {
       Serial.println("Got response");
@@ -76,6 +77,8 @@ void TelegramControl::handleNewMessage(int num) {
       this->bot->sendMessage(chatId, "You are an unauthorised user!");
       continue;
     }
+
+    Serial.println(String("Received: ") + text);
 
     if (text == "/weather") {
       MotorState state = this->motorControl->getState();

@@ -36,10 +36,15 @@ void WebClient::connectAWS() {
 }
 
 void WebClient::refreshConnection() {
-  unsigned long timeSinceLast = millis() - this->lastRefresh;
-  if (timeSinceLast >= 1000) {
-    this->mqttClient->loop();
-    this->lastRefresh = millis();
+  if (!this->mqttClient->connected()) {
+    this->connectAWS();
+    this->lastRefresh = 0;
+  } else {
+    unsigned long timeSinceLast = millis() - this->lastRefresh;
+    if (timeSinceLast >= 1000) {
+      this->mqttClient->loop();
+      this->lastRefresh = millis();
+    }
   }
 }
 
@@ -52,10 +57,11 @@ void WebClient::publishInvalidEntry() {
   this->mqttClient->publish(AWS_IOT_PUBLISH_TOPIC, jsonBuffer);
 }
 
-void WebClient::publishSnapshot() {
+void WebClient::publishSnapshot(bool flash) {
   StaticJsonDocument<200> doc;
   doc["time"] = millis();
   doc["message"] = "";
+  doc["flash"] = true;
   char jsonBuffer[512];
   serializeJson(doc, jsonBuffer);
   this->mqttClient->publish(AWS_IOT_PUBLISH_TOPIC, jsonBuffer);

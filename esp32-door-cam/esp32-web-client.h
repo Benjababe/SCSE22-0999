@@ -12,6 +12,7 @@
 #include "secrets.h"
 
 #define AWS_IOT_SUBSCRIBE_TOPIC "esp32/door_invalid_entry"
+#define FLASH_GPIO_PIN 4
 
 void onInvalidEntry(String &, String &);
 int sendPhotoTelegram(String, String);
@@ -37,7 +38,7 @@ public:
   WebClient();
 
   /** Creates a connection to AWS IoT Core */
-  void connectAWS();
+  void connectAWS(bool);
 
   /** Keeps the MQTT connection alive */
   void refreshConnection();

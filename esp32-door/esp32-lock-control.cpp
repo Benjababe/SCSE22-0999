@@ -18,7 +18,7 @@ LockControl::LockControl() {
   this->pinCursor = 0;
 
   this->lastBotHandled = 0;
-  this->botRequestDelay = 3000;
+  this->botRequestDelay = 1000;
   this->acceptedIds = SECRET_TELEGRAM_IDS;
 }
 
@@ -169,6 +169,7 @@ void LockControl::printLCDPin() {
 void LockControl::handleNewMessages() {
   if (millis() > (this->lastBotHandled + this->botRequestDelay)) {
     int numNewMsgs = this->bot->getUpdates(this->bot->last_message_received + 1);
+    Serial.printf("%d new messages from telegram...\n", numNewMsgs);
 
     while (numNewMsgs) {
       Serial.println("Got response");
@@ -194,6 +195,8 @@ void LockControl::handleNewMessage(int num) {
       this->bot->sendMessage(chatId, "You are an unauthorised user!");
       continue;
     }
+
+    Serial.println(String("Received: ") + text);
 
     if (text.startsWith("/setpin")) {
       if (text.length() != (8 + PIN_LEN)) {
@@ -232,7 +235,11 @@ void LockControl::handleNewMessage(int num) {
     }
 
     else if (text == "/snapshot") {
-      this->webClient->publishSnapshot();
+      this->webClient->publishSnapshot(false);
+    }
+
+    else if (text == "/flashsnapshot") {
+      this->webClient->publishSnapshot(true);
     }
   }
 }
